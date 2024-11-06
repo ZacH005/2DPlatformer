@@ -62,43 +62,6 @@ public class PlatformerCanvas extends JPanel implements ActionListener, KeyListe
             isJumping = false;
         }
 
-        for (Platform platform : platforms) {
-//            if (Playerx + width == platform.x && Playery + height == platform.y + platform.height) {
-//                //do not move to the right
-//                break;
-//            } else if (Playerx == platform.x + platform.width && Playery + height == platform.y + platform.height)  {
-//                //do not move to the left
-//
-//                break;
-//            }
-            // Vectors trying to find if point of platform lies on player side. Using right side of player to find if the top left point on platform is on the line
-//            if (distance(Playerx+width, platform.x, Playery, platform.y) + distance(platform.x, Playerx+width, platform.y, Playery+height) == distance(Playerx+width, Playerx+width,Playery, Playery+height))
-//                velocityX = 0;
-//            if (distance(Playerx, platform.x+ platform.width, Playery, platform.y) + distance(platform.x+ platform.width, Playerx, platform.y, Playery+height) == distance(Playerx, Playerx,Playery, Playery+height))
-//                velocityX = 0;
-//            if (Playerx + width > platform.x && Playerx < platform.x + platform.width && Playery >= platform.y + platform.height)   {
-//                Playery = platform.y + platform.height;
-//            }
-
-            // Check if player is colliding with the left side of the platform
-            if (Playerx + width > platform.x && Playerx < platform.x &&
-                    Playery + height > platform.y && Playery < platform.y + platform.height) {
-                Playerx = platform.x - width - velocityX; // position the player on the left side of the platform
-            }
-
-            // Check if player is colliding with the right side of the platform
-            if (Playerx < platform.x + platform.width && Playerx + width > platform.x + platform.width &&
-                    Playery + height > platform.y && Playery < platform.y + platform.height) {
-                Playerx = platform.x + platform.width - velocityX; // position the player on the right side of the platform
-            }
-
-            // Check if player is colliding with the bottom of the platform
-            if (Playery < platform.y + platform.height && Playery + height > platform.y + platform.height &&
-                    Playerx + width > platform.x && Playerx < platform.x + platform.width) {
-                Playery = platform.y + platform.height + velocityY; // position the player below the platform
-            }
-        }
-
         // Player Movement based on Velocity
         Playerx += velocityX;
         Playery += velocityY;
@@ -108,10 +71,12 @@ public class PlatformerCanvas extends JPanel implements ActionListener, KeyListe
         if (Playerx + width > getWidth()) Playerx = getWidth() - width;
 
         // Update player information display
-        playerInfoLabel.setText("Position: (" + Playerx + ", " + Playery + ") | X Velocity: " + velocityX + " | Y Velocity: " + velocityY + " | Jumping: " + isJumping + " | On Ground: " + isOnGround());
+        playerInfoLabel.setText("Position: (" + Playerx + ", " + Playery + ") | X Velocity: " + velocityX + " | Y Velocity: " + velocityY + " | Jumping: " + isJumping + " | On Ground: " + isOnGround() + " | Colliding: " + isColliding(e));
 
         repaint();
     }
+
+
 
     @Override
     public void keyPressed(KeyEvent e) {
@@ -125,8 +90,10 @@ public class PlatformerCanvas extends JPanel implements ActionListener, KeyListe
             isJumping = true;
             velocityY = JUMP_STRENGTH; // Jump if on the ground or platform
         }
+
     }
 
+    // Finds distance / line between points A(x1, y1) and B(x2, y2)
     public double distance(int x1, int x2, int y1, int y2)   {
 
         return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1 - y2, 2));
@@ -149,6 +116,38 @@ public class PlatformerCanvas extends JPanel implements ActionListener, KeyListe
         for (Platform platform : platforms) {
             if (Playerx + width > platform.x && Playerx < platform.x + platform.width && Playery + height >= platform.y && Playery + height <= platform.y + platform.height) {
                 Playery = platform.y - height;  // Position player on top of the platform
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isColliding(KeyEvent e)   {
+        int key = e.getKeyCode();
+
+        for (Platform platform : platforms) {
+            //based on the side its walking into set velocity to 0 depending on the movement key pressed.
+            // Check if player is colliding with the left side of the platform
+            if (Playerx + width > platform.x && Playerx < platform.x &&
+                    Playery + height > platform.y && Playery < platform.y + platform.height) {
+                //Playerx = platform.x - width ; // position the player on the left side of the platform
+                if (key == KeyEvent.VK_RIGHT) {
+                    velocityX = 0;
+                }
+                return true;
+            } else if (Playerx < platform.x + platform.width && Playerx + width > platform.x + platform.width &&
+                    Playery + height > platform.y && Playery < platform.y + platform.height) {
+                //Playerx = platform.x + platform.width ; // position the player on the right side of the platform
+                // Check if player is colliding with the right side of the platform
+                if (key == KeyEvent.VK_LEFT) {
+                    velocityX = 0;
+                }
+                return true;
+            } else if (Playery < platform.y + platform.height && Playery + height > platform.y + platform.height &&
+                    Playerx + width > platform.x && Playerx < platform.x + platform.width) {
+                velocityY = -(velocityY/2);
+                //Playery = platform.y + platform.height + velocityY; // position the player below the platform
+                // Check if player is colliding with the bottom of the platform
                 return true;
             }
         }
