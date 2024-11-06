@@ -3,7 +3,7 @@ import java.awt.*;
 public class Player {
     private int x, y, width, height;
     private int velocityX = 0, velocityY = 0;
-    private final int GRAVITY = 15;
+    private final int GRAVITY = 1;
     private final int JUMP_STRENGTH = -15;
     private final int MOVE_SPEED = 10;
     private boolean isJumping = false;
@@ -16,7 +16,7 @@ public class Player {
     }
 
     public void applyGravity() {
-        if (!isJumping) {
+        if (isJumping) {
             velocityY += GRAVITY;
         }
     }
@@ -30,12 +30,14 @@ public class Player {
 
     public void jump() {
         if (!isJumping) {
-            velocityY = JUMP_STRENGTH;
             isJumping = true;
+            velocityY = JUMP_STRENGTH;
         }
     }
 
-    public void stopHorizontalMovement() { velocityX = 0; }
+    public void stopHorizontalMovement() {
+        velocityX = 0;
+    }
 
     public void updatePosition() {
         x += velocityX;
@@ -43,6 +45,7 @@ public class Player {
     }
 
     public void draw(Graphics g) {
+        //makes color and actually makes the player
         g.setColor(new Color(128, 0, 123));
         g.fillRect(x, y, width, height);
     }

@@ -16,6 +16,6 @@ public class PlatformerGame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        gameCanvas.requestFocusInWindow();  // Ensures that the canvas has focus for key events
+        gameCanvas.requestFocusInWindow();
     }
 }
