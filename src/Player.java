@@ -7,6 +7,8 @@ public class Player {
     private final int JUMP_STRENGTH = -15;
     private final int MOVE_SPEED = 10;
     private boolean isJumping = false;
+    private final int maxVelocityY = 18;
+
 
     public Player(int x, int y, int width, int height) {
         this.x = x;
@@ -16,7 +18,7 @@ public class Player {
     }
 
     public void applyGravity() {
-        if (isJumping) {
+        if (isJumping && velocityY <= maxVelocityY) {
             velocityY += GRAVITY;
         }
     }

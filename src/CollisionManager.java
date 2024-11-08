@@ -9,46 +9,79 @@ public class CollisionManager {
         this.platforms = platforms;
     }
 
+    // Checks if the player is on the ground (landing on top of a platform)
     public boolean isOnGround() {
         for (Platform platform : platforms) {
             if (player.getX() + player.getWidth() > platform.x &&
                     player.getX() < platform.x + platform.width &&
-                    player.getY() + player.getHeight() >= platform.y &&
-                    player.getY() + player.getHeight() <= platform.y + platform.height) {
+                    player.getY() + player.getHeight() <= platform.y &&
+                    player.getY() + player.getHeight() + player.getVelocityY() >= platform.y) {  // Predict the next position
 
-                // this should get it to stay ontop of platform
+                // Position player on top of the platform and stop vertical movement
                 player.setY(platform.y - player.getHeight());
-                if (!player.isJumping())    {
-                    player.setVelocityY(0);
-                }
+                player.setVelocityY(0);
                 return true;
             }
         }
         return false;
     }
 
+    // Main collision check method
     public void checkCollisions() {
-        player.setJumping(!isOnGround()); // just makes sure that jumping happens only when not on ground, also allows for yvelocity to reset because now it recognizes the difference between being on ground and jumping
+        player.setJumping(!isOnGround());
+        checkSideCollisions();
+    }
 
-        //  TODO: need to make it detect side-on collision
+    // Method to handle side collisions (left and right) with prediction
+    private void checkSideCollisions() {
+        int nextX = player.getX() + player.getVelocityX();  // Predicted next horizontal position
+        int nextY = player.getY() + player.getVelocityY();  // Predicted next vertical position
+
         for (Platform platform : platforms) {
-            //based on the side its walking into set velocity to 0 depending on the movement key pressed.
-            // Check if player is colliding with the left side of the platform
-            if (player.getX() + player.getWidth() > platform.x && player.getX() < platform.x &&
-                    player.getY() + player.getHeight() > platform.y && player.getY() < platform.y + platform.height) {
-                player.setX(platform.x - player.getWidth()); // position the player on the left side of the platform
+            // Moving right into a platform's left side
+            if (player.getVelocityX() > 0 && // Moving right
+                    nextX + player.getWidth() > platform.x &&
+                    player.getX() < platform.x &&
+                    player.getY() + player.getHeight() > platform.y &&
+                    player.getY() < platform.y + platform.height) {
 
-            } else if (player.getX() < platform.x + platform.width && player.getX() + player.getWidth() > platform.x + platform.width &&
-                    player.getY() + player.getHeight() > platform.y && player.getY() < platform.y + platform.height) {
-                player.setX(platform.x + platform.width); // position the player on the right side of the platform
-                // Check if player is colliding with the right side of the platform
-            } else if (player.getY() < platform.y + platform.height && player.getY() + player.getHeight() > platform.y + platform.height &&
-                    player.getX() + player.getWidth() > platform.x && player.getX() < platform.x + platform.width) {
-                //player.setVelocityY(-(player.getVelocityY()/2));
-                player.setY(platform.y + platform.height ); // position the player below the platform
-                // Check if player is colliding with the bottom of the platform
+                // Position player just to the left of the platform and stop horizontal movement
+                player.setX(platform.x - player.getWidth());
+                player.setVelocityX(0);
+            }
+            // Moving left into a platform's right side
+            else if (player.getVelocityX() < 0 && // Moving left
+                    nextX < platform.x + platform.width &&
+                    player.getX() + player.getWidth() > platform.x + platform.width &&
+                    player.getY() + player.getHeight() > platform.y &&
+                    player.getY() < platform.y + platform.height) {
+
+                // Position player just to the right of the platform and stop horizontal movement
+                player.setX(platform.x + platform.width);
+                player.setVelocityX(0);
+            }
+            // Moving downwards and hitting the bottom side of a platform
+            if (player.getVelocityY() > 0 && // Moving down
+                    nextY + player.getHeight() > platform.y &&
+                    player.getY() < platform.y &&
+                    player.getX() + player.getWidth() > platform.x &&
+                    player.getX() < platform.x + platform.width) {
+
+                // Position player on top of the platform and stop vertical movement
+                player.setY(platform.y - player.getHeight());
+                player.setVelocityY(0);
+            }
+            // Moving upwards and hitting the underside of a platform
+            else if (player.getVelocityY() < 0 && // Moving up
+                    nextY < platform.y + platform.height &&
+                    player.getY() > platform.y &&
+                    player.getX() + player.getWidth() > platform.x &&
+                    player.getX() < platform.x + platform.width) {
+
+                // Position player below the platform and stop upward movement
+                player.setY(platform.y + platform.height);
+                player.setVelocityY(0);
             }
         }
-
     }
 }

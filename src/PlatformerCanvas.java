@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlatformerCanvas extends JPanel implements ActionListener {
-    private Player player;
+    private final Player player;
     private List<Platform> platforms;
     private CollisionManager collisionManager;
     private JLabel playerInfoLabel;
@@ -19,10 +19,12 @@ public class PlatformerCanvas extends JPanel implements ActionListener {
         this.collisionManager = new CollisionManager(player, platforms);
 
         platforms.add(new Platform(0, 800, 3000, 600));
-        platforms.add(new Platform(800, 750, 50, 20));
+        platforms.add(new Platform(700, 750, 50, 20));
         platforms.add(new Platform(400, 780, 200, 20));
-        platforms.add(new Platform(700, 700, 50, 20));
-        platforms.add(new Platform(900, 650, 50, 20));
+        platforms.add(new Platform(800, 700, 50, 20));
+        platforms.add(new Platform(900, 640, 50, 20));
+        platforms.add(new Platform(1100, 500, 50, 20));
+        platforms.add(new Platform(1300, 200, 50, 1000));
         platforms.add(new Platform(1000, 580, 100, 20));
 
         // SHould be the ingame time if it works
@@ -46,6 +48,8 @@ public class PlatformerCanvas extends JPanel implements ActionListener {
         for (Platform platform : platforms) {
             platform.draw(g);
         }
+
+        //g.fillOval(400, 700, 200, 20);
     }
 
     @Override
